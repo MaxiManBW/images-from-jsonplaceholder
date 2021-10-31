@@ -16,6 +16,7 @@ const Cards: FC<Props> = ({ photos }) => {
       {photos.map(p => {
         return (
           <Card
+            key={p.id}
             hoverable
             style={{ width: 320, margin: 10 }}
             cover={<img alt={p.title} src={p.thumbnailUrl} />}
