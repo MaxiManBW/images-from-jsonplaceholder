@@ -1,9 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { photosReducer } from './reducers'
+import { modalReducer, photosReducer } from './reducers'
 
 export const store = configureStore({
   reducer: {
     photos: photosReducer,
+    modal: modalReducer,
   },
 })
 
