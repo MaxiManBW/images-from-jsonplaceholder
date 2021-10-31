@@ -1,24 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import './App.css'
-import { getAllPhotos } from './services/api'
-
-type PhotoType = {
-  albumId: number
-  id: number
-  title: string
-  url: string
-  thumbnailUrl: string
-}
+import { useAppDispatch, useAppSelector } from './hooks/reduxHooks'
+import { getAllPhotos } from './store/reducers/photosReducer'
 
 function App() {
-
-  const [photos, setPhotos] = useState<PhotoType[] | null>(null)
-
+  const dispatch = useAppDispatch()
+  const photos = useAppSelector((state) => state.photos.photos)
   useEffect(() => {
     const run = async () => {
       try {
-        const photos = await getAllPhotos()
-        setPhotos(photos)
+        dispatch(getAllPhotos())
       } catch (error) {
         console.log('Request photo error', error)
       }
@@ -29,7 +20,7 @@ function App() {
   return (
     <div className="App">
     </div>
-  );
+  )
 }
 
 export default App
