@@ -30,6 +30,7 @@ const Pagination: FC<Props> = ({ total, onChange, pageSize }) => {
       itemRender={itemRender}
       onChange={onChange}
       pageSize={pageSize}
+      defaultCurrent={1}
     />
   )
 }
