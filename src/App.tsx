@@ -26,6 +26,10 @@ function App() {
     run()
   }, [])
 
+  useEffect(() => {
+    setSlicedPhotos(photos.slice(0, PAGE_SIZE))
+  }, [photos])
+
 
   const handleChange = (page: number, currentPageSize?: number) => {
     const x = currentPageSize ?? PAGE_SIZE

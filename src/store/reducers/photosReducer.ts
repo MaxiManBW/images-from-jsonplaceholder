@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit'
 import * as api from '../../services/api'
 
 export type PhotoType = {
@@ -29,7 +29,11 @@ export const getAllPhotos = createAsyncThunk<PhotoType[]>(
 export const photosSlice = createSlice({
   name: 'photos',
   initialState,
-  reducers: {},
+  reducers: {
+    deletePhotoById: (state, action: PayloadAction<number>) => {
+      state.photos = state.photos.filter(p => p.id !== action.payload)
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(getAllPhotos.pending, (state) => {
       state.status = 'loading'
@@ -48,5 +52,9 @@ export const photosSlice = createSlice({
     })
   }
 })
+
+export const {
+  deletePhotoById,
+} = photosSlice.actions;
 
 export default photosSlice.reducer

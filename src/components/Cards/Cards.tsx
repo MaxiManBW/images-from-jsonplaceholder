@@ -1,6 +1,8 @@
+import { FC, SyntheticEvent } from 'react'
 import { Card } from 'antd'
-import { FC } from 'react'
-import { PhotoType } from '../../store/reducers/photosReducer'
+import { DeleteOutlined } from '@ant-design/icons'
+import { deletePhotoById, PhotoType } from '../../store/reducers/photosReducer'
+import { useAppDispatch } from '../../hooks/reduxHooks'
 
 import styles from './style.module.css'
 
@@ -11,6 +13,11 @@ type Props = {
 }
 
 const Cards: FC<Props> = ({ photos }) => {
+  const dispatch = useAppDispatch()
+  const handleDelete = (id: number) => (e: SyntheticEvent) => {
+    dispatch(deletePhotoById(id))
+  }
+
   return (
     <div className={styles.CardsWrapper}>
       {photos.map(p => {
@@ -20,6 +27,9 @@ const Cards: FC<Props> = ({ photos }) => {
             hoverable
             style={{ width: 320, margin: 10 }}
             cover={<img alt={p.title} src={p.thumbnailUrl} />}
+            actions={[
+              <DeleteOutlined key="delete" onClick={handleDelete(p.id)} />,
+            ]}
           >
             <Meta
               title={`ID:${p.id} | AlbumId: ${p.albumId}`}
