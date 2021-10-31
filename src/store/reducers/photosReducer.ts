@@ -13,12 +13,22 @@ type PhotosState = {
   status: "loading" | "idle"
   error: string | null
   photos: PhotoType[]
+  sort: SortType
+}
+
+type SortType = {
+  fieldName: keyof PhotoType
+  sortDirection: 'ASC' | 'DESC'
 }
 
 const initialState: PhotosState = {
   photos: [],
   error: null,
   status: 'idle',
+  sort: {
+    sortDirection: 'ASC',
+    fieldName: 'id',
+  },
 }
 
 export const getAllPhotos = createAsyncThunk<PhotoType[]>(
@@ -32,6 +42,19 @@ export const photosSlice = createSlice({
   reducers: {
     deletePhotoById: (state, action: PayloadAction<number>) => {
       state.photos = state.photos.filter(p => p.id !== action.payload)
+    },
+    sortDesc: (state, action: PayloadAction<SortType>) => {
+      const { fieldName, sortDirection } = action.payload
+      state.photos.sort((a, b) => {
+        if (fieldName === 'albumId') {
+          return sortDirection === 'DESC'
+            ? b.albumId - a.albumId
+            : a.albumId - b.albumId
+        }
+        return sortDirection === 'DESC'
+          ? b.id - a.id
+          : a.id - b.id
+      })
     },
   },
   extraReducers: (builder) => {
@@ -55,6 +78,7 @@ export const photosSlice = createSlice({
 
 export const {
   deletePhotoById,
+  sortDesc,
 } = photosSlice.actions;
 
 export default photosSlice.reducer

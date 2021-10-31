@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useAppDispatch, useAppSelector } from './hooks/reduxHooks'
-import { getAllPhotos, PhotoType } from './store/reducers/photosReducer'
+import { getAllPhotos, PhotoType, sortDesc } from './store/reducers/photosReducer'
 import { Cards, Pagination } from './components'
-import { Modal } from 'antd'
+import { Modal, Radio, RadioChangeEvent } from 'antd'
 
 import './App.css'
 
@@ -10,7 +10,7 @@ const PAGE_SIZE = 10
 
 function App() {
   const dispatch = useAppDispatch()
-  const { photos, error, status } = useAppSelector((state) => state.photos)
+  const { photos, error, status, sort } = useAppSelector((state) => state.photos)
   const { modalData } = useAppSelector((state) => state.modal)
   
   const [slicedPhotos, setSlicedPhotos] = useState<PhotoType[]>([])
@@ -34,7 +34,6 @@ function App() {
     setSlicedPhotos(photos.slice(0, PAGE_SIZE))
   }, [photos])
 
-
   const handleChange = (page: number, currentPageSize?: number) => {
     const x = currentPageSize ?? PAGE_SIZE
     if (currentPageSize && pageSize !== currentPageSize) {
@@ -49,15 +48,63 @@ function App() {
     }
   }
 
+  const handleSort = (e: RadioChangeEvent) => {
+    const fieldSortName = e.target.value
+    
+    if (['ASC', 'DESC'].includes(fieldSortName)) {
+      dispatch(sortDesc({
+        ...sort,
+        sortDirection: fieldSortName
+      }))
+    } else {
+      dispatch(sortDesc({
+        ...sort,
+        fieldName: fieldSortName,
+      }))
+    }
+  }
+
+  type OptionsType = {
+    label: Capitalize<keyof PhotoType>
+    value: keyof PhotoType
+    disabled: boolean
+  }
+  const options: OptionsType[] = [
+    { label: 'Id', value: 'id', disabled: false },
+    { label: 'AlbumId', value: 'albumId', disabled: false },
+    { label: 'Title', value: 'title', disabled: true },
+    { label: 'ThumbnailUrl', value: 'thumbnailUrl', disabled: true },
+    { label: 'Url', value: 'url', disabled: true },
+  ]
+  const options2: {label: string, value: string}[] = [
+    { label: 'ASC', value: 'ASC' },
+    { label: 'DESC', value: 'DESC' },
+  ]
+
   return (
     <div className="App">
       {status === 'loading' && 'Photos is loading...'}
       {error !== null && <div>{error}</div>}
       {status === 'idle' && error === null &&
-        <Cards
-          photos={slicedPhotos}
-          onClick={() => setModalVisible(true)}
-        />
+        <>
+          <Radio.Group
+            options={options}
+            defaultValue='id'
+            onChange={handleSort}
+            optionType='button'
+          />
+          <Radio.Group
+            options={options2}
+            defaultValue='ASC'
+            onChange={handleSort}
+            optionType='button'
+          />
+
+          <Cards
+            photos={slicedPhotos}
+            onClick={() => setModalVisible(true)}
+          />
+        </>
       }
       <Pagination 
         pageSize={pageSize}
